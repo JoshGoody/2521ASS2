@@ -16,11 +16,12 @@ Graph newGraph(int noNodes) {
     
 	assert(noNodes > 0);
 	Graph new = malloc(sizeof(GraphRep));
-	assert(new != 0);
+	assert(new != NULL);
 	new->nN = noNodes; 
 	new->nE = 0; 
 	
 	new->array = malloc(noNodes*sizeof(AdjList));
+	assert(new->array != NULL);	
 	int i;
 	for (i = 0; i < noNodes; i++) {
 	    new->array[i]= NULL;
