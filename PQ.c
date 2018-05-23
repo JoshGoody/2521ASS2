@@ -23,112 +23,120 @@ PQ newPQ() {
     new->size = 0;
     new->array = malloc(MAX_ARRAY_SIZE*sizeof(ItemPQ));
     assert(new->array != NULL);
+    
+    return new;
 }
 
 //maybe make this faster, not sure about how we can know if key structure is already there?
-void  addPQ(PQ, ItemPQ) {
+void  addPQ(PQ pq, ItemPQ element) {
     
     int i = 1;
-    for (i = 1; i <= PQ->size; i++) {
-        if (PQ->array[i]->key == ItemPQ->key) {
-            PQ->array[i]->value = ItemPQ->value;
+    for (i = 1; i <= pq->size; i++) {
+        if (pq->array[i].key == element.key) {
+            pq->array[i].value = element.value;
             return;
         }
     }
     
-    PQ->size++;
+    pq->size++;
     
-    PQ->array[size] = ItemPQ;
-    int length = PQ->size;
-    ItemPQ *holder;
-    while (PQ->array[size]->value < PQ->array[(size/2)]->value) {
-        holder = PQ->array[size];
-        PQ->array[size] = PQ->array[size/2];
-        PQ->array[size/2] = holder;
+    pq->array[pq->size] = element;
+    int size = pq->size;
+    ItemPQ holder;
+    while (pq->array[size].value < pq->array[(size/2)].value) {
+        holder = pq->array[size];
+        pq->array[size] = pq->array[size/2];
+        pq->array[size/2] = holder;
         size = size/2;
         if (size == 1) break;
     }
 }                
 
 
-ItemPQ  dequeuePQ(PQ) {
-
-    if (PQ == NULL) return NULL;
-    if (PQ->size == 0) return NULL;
-    ItemPQ *holder;
-    if (PQ->size == 1) {
-        holder = PQ->array[1];
-        PQ->array[1] == NULL;
-        PQ->size--;
+ItemPQ  dequeuePQ(PQ pq) {
+    //should return null but won't?
+    assert(pq != NULL && pq->size != 0);
+    ItemPQ holder;
+    
+    if (pq->size == 1) {
+        holder = pq->array[1];
+        pq->size--;
         return holder; 
     }
     
-    ItemPQ *min = PQ->array[1];
+    ItemPQ min = pq->array[1];
     
-    holder = PQ->array[PQ->size];
-    PQ->array[PQ->size] = PQ->array[1];
-    PQ->array[1] = holder;   
+    holder = pq->array[pq->size];
+    pq->array[pq->size] = pq->array[1];
+    pq->array[1] = holder;   
     
-    PQ->array[PQ->size] = NULL;
-    PQ->size--;
+    //pq->array[pq->size] = NULL;
+    pq->size--;
     int i = 1; //start of PQ
-    if (PQ->size > 2) {
-        while (PQ->array[i]->value > PQ->array[(i*2)]->value ||PQ->array[i]->value > PQ->array[(i*2 + 1)]->value) {
+    if (pq->size > 2) {
+        while (pq->array[i].value > pq->array[(i*2)].value ||pq->array[i].value > pq->array[(i*2 + 1)].value) {
             int swap;
-            if (PQ->array[(i*2)]->value < PQ->array[(i*2 + 1)]->value) {
+            if (pq->array[(i*2)].value < pq->array[(i*2 + 1)].value) {
                 swap = i*2;
             }
             else swap = i*2 + 1;    
             
-            holder = PQ->array[i];
-            PQ->array[i] = PQ->array[swap];
-            PQ->array[swap] = holder;
+            holder = pq->array[i];
+            pq->array[i] = pq->array[swap];
+            pq->array[swap] = holder;
             i=swap;
-            if (i*2 > PQ->size) break;
-            if (i*2 == PQ->size && PQ->array[i]->value > PQ->array[(i*2)]->value) {
-                holder = PQ->array[i];
-                PQ->array[i] = PQ->array[i*2];
-                PQ->array[i*2] = holder;
+            if (i*2 > pq->size) break;
+            if (i*2 == pq->size && pq->array[i].value > pq->array[(i*2)].value) {
+                holder = pq->array[i];
+                pq->array[i] = pq->array[i*2];
+                pq->array[i*2] = holder;
                 break;
             }
                  
-        }    
-        
-        else {
-            if (PQ->array[1]->value > PQ->array[2]->value) {
-                holder = PQ->array[1];
-                PQ->array[1] = PQ->array[2];
-                PQ->array[2] = holder;
-            }
+        } 
+    }    
+    else {
+        if (pq->array[1].value > pq->array[2].value) {
+            holder = pq->array[1];
+            pq->array[1] = pq->array[2];
+            pq->array[2] = holder;
         }
     }
+    
     
     return min;
 }                
     
     
-void  updatePQ(PQ, ItemPQ) {
+void  updatePQ(PQ pq, ItemPQ element) {
         
     int i = 1;
-    for (i = 1; i <= PQ->size; i++) {
-        if (PQ->array[i]->key == ItemPQ->key) {
-            PQ->array[i]->value = ItemPQ->value;
+    for (i = 1; i <= pq->size; i++) {
+        if (pq->array[i].key == element.key) {
+            pq->array[i].value = element.value;
             return;
         }
     }
 }   
 
-int PQEmpty(PQ) {
-    if (PQ->size == 0) return 1;
+int PQEmpty(PQ p) {
+    if (p->size == 0) return 1;
     else return 0;
 }
 
-void  showPQ(PQ){
-    
-
+void  showPQ(PQ pq){
+    printf("The priority Queue has %d elements\n", pq->size);
+    int i;
+    for (i = 1; i <= pq->size; i++) {
+        printf(" key %d value %d\n", pq->array[i].key, pq->array[i].value);
+    }
 }
-void  freePQ(PQ){
+       
 
+
+void  freePQ(PQ pq){
+    free(pq->array);
+    free(pq);
 }
     
     
