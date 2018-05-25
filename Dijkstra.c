@@ -11,14 +11,12 @@ typedef struct PredNode {
    int         v;
    struct PredNode *next;
 } PredNode;
-
 typedef struct ShortestPaths {
    int noNodes;
    int src;
    int *dist;
    PredNode **pred;
 } ShortestPaths;
-
 */
 
 ShortestPaths dijkstra(Graph g, Vertex v) {
@@ -36,6 +34,8 @@ ShortestPaths dijkstra(Graph g, Vertex v) {
     }
 	paths.dist[v] = 0;
     
+    int *visited = calloc(paths.noNodes, paths.noNodes*sizeof(int));
+    
 	PQ pq = newPQ();
     ItemPQ item;
     item.key = v;
@@ -48,32 +48,41 @@ ShortestPaths dijkstra(Graph g, Vertex v) {
         
         ItemPQ next = dequeuePQ(pq);
 		int src = next.key;
-    
+        visited[src] = 1;
+        
 	    AdjList neighbours = outIncident(g, src);
-		PredNode *predCurr = NULL;
+		//PredNode *predCurr = NULL;
 	
 	    while (neighbours != NULL) {
 	        int weight = neighbours->weight;
 	        int dest = neighbours->w;
         
-            if ((weight + paths.dist[src]) < paths.dist[dest]) {
-                paths.dist[dest] = weight + paths.dist[src];
+            if (((weight + paths.dist[src]) < paths.dist[dest]) && visited[dest] == 0) { 
+                //paths.dist[dest] = weight + paths.dist[src];
 				
-				PredNode pred;
-				pred.v = src;
-				pred.next = NULL;
-				
-				if (paths.pred[dest] != NULL){
-					predCurr->next = &pred;
-				} else {
-					paths.pred[dest] = &pred;
-				}
-				
-				predCurr = &pred;
-				
+				PredNode *pred;
+				if (paths.pred[dest] != NULL) { //&& (weight + paths.dist[src]) < paths.dist[dest] ){
+				    paths.pred[dest]->v = src;
+				    paths.pred[dest]->next = NULL;
+			    }
+			    /*else if (paths.pred[dest] != NULL) {
+			        pred = malloc(sizeof(PredNode));
+			        pred->next = paths.pred[dest];
+			        pred->v = src;
+			        paths.pred[dest] = pred;
+			    }*/
+			    else {
+			        pred = malloc(sizeof(PredNode));
+			        pred->v = src;
+			        pred->next = NULL;
+			        paths.pred[dest] = pred;
+		        }
+		             
+				paths.dist[dest] = weight + paths.dist[src];
 				ItemPQ holder;
                 holder.key = dest;
                 holder.value = paths.dist[dest];
+                //printf("%d %d \n", holder.value, holder.key); 
                 addPQ(pq, holder);
             }
 			
@@ -103,5 +112,22 @@ void showShortestPaths(ShortestPaths paths) {
 
 
 void  freeShortestPaths(ShortestPaths paths) {
-
+    int i = paths.noNodes;
+    int j;
+    
+    for (j = 0; j < i; j++) {
+        PredNode *curr, *holder;
+        curr = paths.pred[j];
+        
+        while (curr != NULL) {
+            holder = curr;
+            //printf("%d \n", holder->v);
+            curr = curr->next;
+            free(holder);
+        }
+    }
+    free(paths.pred);
+    free(paths.dist);
+    //free(paths) dont know why it wont work
 }
+

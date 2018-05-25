@@ -203,10 +203,12 @@ void freeGraph(Graph g) {
             free(prevNode);
         }
     }
-    
+
+   
     for (Vertex v = 0; v < g->nN; v++) {
         free(g->array[v]);
     }
     
     free(g);
 }         
+

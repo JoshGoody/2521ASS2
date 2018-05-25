@@ -34,6 +34,15 @@ void  addPQ(PQ pq, ItemPQ element) {
     for (i = 1; i <= pq->size; i++) {
         if (pq->array[i].key == element.key) {
             pq->array[i].value = element.value;
+            
+            ItemPQ holder;
+            while (pq->array[i].value < pq->array[(i/2)].value) {
+                holder = pq->array[i];
+                pq->array[i] = pq->array[i/2];
+                pq->array[i/2] = holder;
+                i = i/2;
+                if (i == 1) break;
+            }
             return;
         }
     }
@@ -114,6 +123,14 @@ void  updatePQ(PQ pq, ItemPQ element) {
     for (i = 1; i <= pq->size; i++) {
         if (pq->array[i].key == element.key) {
             pq->array[i].value = element.value;
+            ItemPQ holder;
+            while (pq->array[i].value < pq->array[(i/2)].value) {
+                holder = pq->array[i];
+                pq->array[i] = pq->array[i/2];
+                pq->array[i/2] = holder;
+                i = i/2;
+                if (i == 1) break;
+            }
             return;
         }
     }
@@ -132,17 +149,10 @@ void  showPQ(PQ pq){
     }
 }
        
-
-
 void  freePQ(PQ pq){
     free(pq->array);
     free(pq);
 }
-    
-    
-    
-    
-    
-    
+
 
     
